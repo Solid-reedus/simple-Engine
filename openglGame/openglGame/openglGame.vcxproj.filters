@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="game">
+      <UniqueIdentifier>{bdcd62bc-ca32-4f6d-836b-ea4d7ea9a5eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{c1a499de-4494-43df-98ce-e6a83204fe26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="model">
+      <UniqueIdentifier>{80a92dba-1cad-489f-abbc-4a7c7ccef069}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader\vertex">
+      <UniqueIdentifier>{5c78ecc8-aa57-4757-b61f-327e018cab3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader\fragment">
+      <UniqueIdentifier>{e0ddfe47-e9bb-4fbc-aca9-02299e9c54be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lighting">
+      <UniqueIdentifier>{341b8794-15c6-4eee-9239-051df334aff8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="actor">
+      <UniqueIdentifier>{664d1563-1140-4052-a669-775aa6e59069}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render">
+      <UniqueIdentifier>{8d44f5b7-9037-439b-889b-c850051dd644}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{299216a8-f729-4c09-ba2c-db2ca1cb9c3f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="game.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="glad.c" />
+    <ClCompile Include="model.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>shader</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
+    <ClCompile Include="box.cpp">
+      <Filter>actor</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="game.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>shader</Filter>
+    </ClInclude>
+    <ClInclude Include="baseRenderable.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="baseActor.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="box.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="boxFragShader.fs">
+      <Filter>shader\fragment</Filter>
+    </None>
+    <None Include="BoxVertexShader.vs">
+      <Filter>shader\vertex</Filter>
+    </None>
+  </ItemGroup>
+</Project>
