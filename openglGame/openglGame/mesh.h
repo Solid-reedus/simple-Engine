@@ -7,6 +7,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+class Shader;
+
 struct Texture
 {
 	unsigned int id;
@@ -22,19 +24,20 @@ struct Vertex
     glm::vec2 TexCoords;
     glm::vec3 Tangent;
     glm::vec3 Bitangent;
+
 };
 
 
 class Mesh
 {
 	public:
-    // mesh Data
-    std::vector<Vertex>       vertices;
-    std::vector<unsigned int> indices;
-    std::vector<Texture>      textures;
+    std::vector<Vertex>       m_vertices;
+    std::vector<unsigned int> m_indices;
+    std::vector<Texture>      m_textures;
     unsigned int VAO;
 
 	Mesh(std::vector<Vertex> p_vertices, std::vector<unsigned int> p_indices, std::vector<Texture> p_textures);
+    void Draw(Shader& p_shader);
 
 	private:
     unsigned int VBO, EBO;

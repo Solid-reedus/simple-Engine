@@ -3,11 +3,11 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "glm/glm.hpp"
 
 
-Shader::Shader(const char* vertexShaderDir, const char* fragmentShaderDir)
+Shader::Shader(const char* p_vertexShaderDir, const char* p_fragmentShaderDir)
 {
     std::string vertexCode;
     std::string fragmentCode;
@@ -19,8 +19,8 @@ Shader::Shader(const char* vertexShaderDir, const char* fragmentShaderDir)
 
     try
     {
-        vShaderFile.open(vertexShaderDir);
-        fShaderFile.open(fragmentShaderDir);
+        vShaderFile.open(p_vertexShaderDir);
+        fShaderFile.open(p_fragmentShaderDir);
         std::stringstream vShaderStream, fShaderStream;
 
         vShaderStream << vShaderFile.rdbuf();
@@ -84,12 +84,32 @@ Shader::Shader(const char* vertexShaderDir, const char* fragmentShaderDir)
 
 }
 
-Shader::~Shader()
+void Shader::setBool(const std::string& p_name, bool p_namevalue) const
 {
-
+    glUniform1i(glGetUniformLocation(ID, p_name.c_str()), (int)p_namevalue);
 }
 
-void Shader::use() const
+void Shader::setInt(const std::string& p_name, int p_value) const
 {
-    glUseProgram(ID);
+    glUniform1i(glGetUniformLocation(ID, p_name.c_str()), p_value);
 }
+
+void Shader::setFloat(const std::string& p_name, float p_value) const
+{
+    glUniform1f(glGetUniformLocation(ID, p_name.c_str()), p_value);
+}
+
+void Shader::setVec3(const std::string& p_name, const glm::vec3& p_value) const
+{
+    glUniform3fv(glGetUniformLocation(ID, p_name.c_str()), 1, &p_value[0]);
+}
+void Shader::setVec3(const std::string& p_name, float p_x, float p_y, float p_z) const
+{
+    glUniform3f(glGetUniformLocation(ID, p_name.c_str()), p_x, p_y, p_z);
+}
+
+void Shader::setMat4(const std::string& p_name, const glm::mat4& p_mat) const
+{
+    glUniformMatrix4fv(glGetUniformLocation(ID, p_name.c_str()), 1, GL_FALSE, &p_mat[0][0]);
+}
+

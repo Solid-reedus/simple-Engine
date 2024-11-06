@@ -2,19 +2,17 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <camera.h>
+#include <shader.h>
 
 #define SCREEN_WIDTH  1080
 #define SCREEN_HEIGHT 720
 
-Game::Game()
-{
+#define WINDOW_NAME "openGL game"
 
-}
-
-Game::~Game()
-{
-
-}
+#define CAPTURE_MOUSE true
+#define SCREEN_ALLOWED_TO_RESIZE true
+#define CLEAR_COLOR 0.1f, 0.1f, 0.1f, 1.0f
 
 
 bool Game::Init()
@@ -29,15 +27,37 @@ bool Game::Init()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "openGL game", NULL, NULL);
+    m_window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_NAME, NULL, NULL);
 
-    if (window == NULL)
+    if (m_window == NULL)
     {
         printf("Failed to create GLFW window \n");
         glfwTerminate();
         return false;
     }
-    glfwMakeContextCurrent(window);
+
+    /*
+     this allows to pass a pointer to Game as a workaround 
+     that glfw funtions need to be static
+    */
+    glfwSetWindowUserPointer(m_window, this);
+    glfwMakeContextCurrent(m_window);
+
+    if (SCREEN_ALLOWED_TO_RESIZE)
+    {
+        glfwSetFramebufferSizeCallback(m_window, OnResize);
+    }
+
+    glfwSetCursorPosCallback(m_window, OnMouseInput);
+    glfwSetScrollCallback(m_window, OnScroll);
+    glfwSetKeyCallback(m_window, OnKeyInput);
+
+
+    if (CAPTURE_MOUSE)
+    {
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
 
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -47,71 +67,114 @@ bool Game::Init()
     }
 
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-
-    while (!glfwWindowShouldClose(window))
-    {
-        Update();
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
+    glEnable(GL_DEPTH_TEST);
 
     if (!InitActors())
     {
+        printf("Failed to initialize actors \n");
         return false;
     }
+
+    while (!glfwWindowShouldClose(m_window))
+    {
+        glClearColor(CLEAR_COLOR);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        Update();
+        Render();
+
+        glfwSwapBuffers(m_window);
+        glfwPollEvents();
+    }
+
 
 
 	return true;
 }
 
-
 bool Game::InitActors()
 {
-    Box* box = new Box();
+    m_sceneCameras.push_back(Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+    m_currentCamera = &m_sceneCameras[0];
+    m_camController = new CameraController(*m_currentCamera);
+    m_shaders.push_back(Shader("standardShader.vs", "standardShader.fs"));
 
-    Instance instanceA =
+    /* 
+    * uncomment this to see example code
+    
+    Monkey* monkey = new Monkey(*m_currentCamera, &m_shaders[0]);
+
+    Instance InstanceArray[10 * 10];
+
+    for (int i = 0; i < 10; i++)
     {
-        glm::vec3(1),
-        glm::vec3(1),
-        glm::vec3(1),
-        glm::mat4(1),
-    };
+        for (int j = 0; j < 10; j++)
+        {
+            InstanceArray[i + j * 10] = 
+            {
+                glm::vec3(j * -3.0f, 0.0f, i * -3.0f + -3.0f),
+                glm::vec3(0.0f, 0.0f, 0.0f),
+                glm::vec3(0.0f, 0.0f, 0.0f),
+                glm::mat4(1.0f),
+            };
+            InstanceArray[i + j * 10].trans = glm::translate(InstanceArray[i + j * 10].trans, InstanceArray[i + j * 10].pos);
+            monkey->AddInstance(InstanceArray[i + j * 10]);
+        }
+    }
 
-    Instance instanceB =
-    {
-        glm::vec3(1,5,1),
-        glm::vec3(1),
-        glm::vec3(1),
-        glm::mat4(1),
-    };
+    m_renderedRenderable.push_back(monkey);
+    */
 
-    box->AddInstance(instanceA);
-    box->AddInstance(instanceB);
-    renderedRenderable.push_back(box);
-
-
-
-    return false;
+    return true;
 }
 
 void Game::Update()
 {
     float currentFrame = static_cast<float>(glfwGetTime());
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
+    m_deltaTime = currentFrame - m_lastFrame;
+    m_lastFrame = currentFrame;
 
+    // Smooth camera movement
+    UpdateKeyInputs();
 
-
-    for (BaseActor*& actor : renderedActors)
+    for (BaseActor*& actor : m_renderedActors)
     {
         actor->Update(currentFrame);
     }
 }
 
+void Game::UpdateKeyInputs()
+{
+    if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        m_camController->ProcessKeyboard(CameraController::FORWARD, m_deltaTime);
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        m_camController->ProcessKeyboard(CameraController::BACKWARD, m_deltaTime);
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        m_camController->ProcessKeyboard(CameraController::RIGHT, m_deltaTime);
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        m_camController->ProcessKeyboard(CameraController::LEFT, m_deltaTime);
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_E) == GLFW_PRESS)
+    {
+        m_camController->ProcessKeyboard(CameraController::UP, m_deltaTime);
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_Q) == GLFW_PRESS)
+    {
+        m_camController->ProcessKeyboard(CameraController::DOWN, m_deltaTime);
+    }
+
+}
+
 void Game::Render()
 {
-    for (BaseRenderable*& renderable : renderedRenderable)
+    for (BaseRenderable*& renderable : m_renderedRenderable)
     {
         renderable->Render();
     }
@@ -119,4 +182,32 @@ void Game::Render()
 
 void Game::Exit()
 {
+}
+
+void Game::OnKeyInput(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_ESCAPE)
+    {
+        glfwSetWindowShouldClose(window, true);
+        return;
+    }
+
+    Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+}
+
+void Game::OnMouseInput(GLFWwindow* window, double xposIn, double yposIn)
+{
+    Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+    glm::vec2 pos = glm::vec2(static_cast<float>(xposIn), static_cast<float>(yposIn));
+    game->m_camController->ProcessMouseMovement(pos);
+}
+
+void Game::OnScroll(GLFWwindow* window, double xoffset, double yoffset)
+{
+
+}
+
+void Game::OnResize(GLFWwindow* window, int width, int height)
+{
+
 }

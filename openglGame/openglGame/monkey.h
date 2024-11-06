@@ -2,12 +2,11 @@
 
 #include "baseRenderable.h"
 
-class Box : public BaseRenderable
+class Monkey : public BaseRenderable
 {
 	public:
-	Box();
+	Monkey(Camera& p_cameraRef, Shader* p_shader);
 	void Render() override;
-
 	private:
 
 };

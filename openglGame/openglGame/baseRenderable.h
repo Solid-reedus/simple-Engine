@@ -7,20 +7,22 @@
 #include "shader.h"
 #include "model.h"
 
+struct Camera;
+
 class BaseRenderable
 {
 	public:
-	//BaseRenderable();
+	BaseRenderable(Camera& p_cameraRef) : m_cameraRef(p_cameraRef) {}
 	virtual void Render() = 0;
-	virtual void AddInstance(Instance newInstance) { intances.push_back(newInstance); };
+	virtual void AddInstance(Instance newInstance) { m_intances.push_back(newInstance); };
 	virtual ~BaseRenderable() = default;
 
 	protected:
-	Shader* shader;
-	Model* model;
+	Shader* m_shader = nullptr;
+	Model*  m_model = nullptr;
 
-	std::vector<Instance> intances;
-
+	std::vector<Instance> m_intances;
+	Camera& m_cameraRef;
 
 };
 

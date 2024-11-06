@@ -28,6 +28,9 @@
     <Filter Include="common">
       <UniqueIdentifier>{299216a8-f729-4c09-ba2c-db2ca1cb9c3f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="camera">
+      <UniqueIdentifier>{ccc821c1-7b85-4388-81ec-cbfcf7dcd891}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game.cpp">
@@ -41,14 +44,14 @@
     <ClCompile Include="shader.cpp">
       <Filter>shader</Filter>
     </ClCompile>
-    <ClCompile Include="player.cpp">
-      <Filter>actor</Filter>
-    </ClCompile>
-    <ClCompile Include="box.cpp">
+    <ClCompile Include="monkey.cpp">
       <Filter>actor</Filter>
     </ClCompile>
     <ClCompile Include="mesh.cpp">
       <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="cameraController.cpp">
+      <Filter>camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -64,20 +67,29 @@
     <ClInclude Include="baseRenderable.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="baseActor.h">
-      <Filter>actor</Filter>
-    </ClInclude>
-    <ClInclude Include="player.h">
-      <Filter>actor</Filter>
-    </ClInclude>
-    <ClInclude Include="box.h">
-      <Filter>actor</Filter>
-    </ClInclude>
     <ClInclude Include="mesh.h">
       <Filter>model</Filter>
     </ClInclude>
     <ClInclude Include="common.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>camera</Filter>
+    </ClInclude>
+    <ClInclude Include="standardShader.fs">
+      <Filter>shader\fragment</Filter>
+    </ClInclude>
+    <ClInclude Include="standardShader.vs">
+      <Filter>shader\vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="cameraController.h">
+      <Filter>camera</Filter>
+    </ClInclude>
+    <ClInclude Include="baseActor.h">
+      <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="monkey.h">
+      <Filter>actor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +97,12 @@
       <Filter>shader\fragment</Filter>
     </None>
     <None Include="BoxVertexShader.vs">
+      <Filter>shader\vertex</Filter>
+    </None>
+    <None Include="defaultShader.fs">
+      <Filter>shader\fragment</Filter>
+    </None>
+    <None Include="defaultShader.vs">
       <Filter>shader\vertex</Filter>
     </None>
   </ItemGroup>
