@@ -4,6 +4,7 @@
 #include <iostream>
 #include <camera.h>
 #include <shader.h>
+#include <lightingManager.h>
 
 #define SCREEN_WIDTH  1080
 #define SCREEN_HEIGHT 720
@@ -43,6 +44,7 @@ bool Game::Init()
     glfwSetWindowUserPointer(m_window, this);
     glfwMakeContextCurrent(m_window);
 
+
     if (SCREEN_ALLOWED_TO_RESIZE)
     {
         glfwSetFramebufferSizeCallback(m_window, OnResize);
@@ -68,6 +70,10 @@ bool Game::Init()
 
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
+
 
     if (!InitActors())
     {
@@ -99,8 +105,35 @@ bool Game::InitActors()
     m_camController = new CameraController(*m_currentCamera);
     m_shaders.push_back(Shader("standardShader.vs", "standardShader.fs"));
 
-    /* 
-    * uncomment this to see example code
+    std::vector<LightingManager::Sun> suns;
+    suns.push_back(
+    {
+        glm::vec3(0.0f, -1.0f, 0.0f),
+        glm::vec3(1.0f),
+        1.0f                                            
+    });
+
+
+    std::vector<LightingManager::SpotLight> spotLights;
+    //spotLights.push_back(
+    //{
+    //    glm::vec3(1.0f, 1.0f, 1.0f),
+    //    glm::vec3(1.0f, 1.0f, 1.0f),
+    //    glm::vec3(1.0f, 1.0f, 1.0f),
+    //    1.0f
+    //});
+
+
+    std::vector<LightingManager::AreaLight> areaLights;
+    //areaLights.push_back(
+    //{
+    //    glm::vec3(1.0f, 1.0f, 1.0f),
+    //    glm::vec3(1.0f, 1.0f, 0.0f),
+    //    1.0f
+    //});
+    lightingManager = new LightingManager(suns, spotLights, areaLights);
+
+
     
     Monkey* monkey = new Monkey(*m_currentCamera, &m_shaders[0]);
 
@@ -110,20 +143,18 @@ bool Game::InitActors()
     {
         for (int j = 0; j < 10; j++)
         {
-            InstanceArray[i + j * 10] = 
-            {
-                glm::vec3(j * -3.0f, 0.0f, i * -3.0f + -3.0f),
-                glm::vec3(0.0f, 0.0f, 0.0f),
-                glm::vec3(0.0f, 0.0f, 0.0f),
-                glm::mat4(1.0f),
-            };
-            InstanceArray[i + j * 10].trans = glm::translate(InstanceArray[i + j * 10].trans, InstanceArray[i + j * 10].pos);
+            InstanceArray[i + j * 10] = Instance
+            (
+                glm::vec3(j * -4.0f, 0.0f, i * -4.0f + -4.0f),
+                glm::vec3(0.0f), 
+                glm::vec3(1.0f)
+            );
+
             monkey->AddInstance(InstanceArray[i + j * 10]);
         }
     }
 
     m_renderedRenderable.push_back(monkey);
-    */
 
     return true;
 }
@@ -174,11 +205,30 @@ void Game::UpdateKeyInputs()
 
 void Game::Render()
 {
+    Shader* shader = &m_shaders[0];
+    shader->use();  // Bind the shader
+
+    unsigned int lightingBlockIndex = glGetUniformBlockIndex(shader->ID, "Lighting");
+    if (lightingBlockIndex != GL_INVALID_INDEX)
+    {
+        glUniformBlockBinding(shader->ID, lightingBlockIndex, 0);
+        glBindBufferBase(GL_UNIFORM_BUFFER, 0, *lightingManager->LookAtLightingUBO());
+    }
+    else
+    {
+        std::cerr << "UBO block 'Lighting' not found in shader." << std::endl;
+    }
+
+    // Render all objects
     for (BaseRenderable*& renderable : m_renderedRenderable)
     {
         renderable->Render();
     }
+
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, 0);
 }
+
+
 
 void Game::Exit()
 {

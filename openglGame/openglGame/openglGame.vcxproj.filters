@@ -53,6 +53,9 @@
     <ClCompile Include="cameraController.cpp">
       <Filter>camera</Filter>
     </ClCompile>
+    <ClCompile Include="lightingManager.cpp">
+      <Filter>lighting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -90,6 +93,9 @@
     </ClInclude>
     <ClInclude Include="monkey.h">
       <Filter>actor</Filter>
+    </ClInclude>
+    <ClInclude Include="lightingManager.h">
+      <Filter>lighting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

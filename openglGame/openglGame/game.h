@@ -10,8 +10,9 @@
 #include <baseActor.h>
 #include <camera.h>
 #include <cameraController.h>
-
 #include <monkey.h>
+
+class LightingManager;
 
 class Game
 {
@@ -29,6 +30,7 @@ class Game
 	float GetDeltaTime() const { return m_deltaTime; };
 	CameraController* m_camController = nullptr;
 	Camera* m_currentCamera = nullptr;
+	LightingManager* lightingManager = nullptr;
 
 	private:
 

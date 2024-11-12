@@ -15,6 +15,8 @@ void Monkey::Render()
 		m_shader->use();
 		m_shader->setMat4("projection", m_cameraRef.GetProjectionMatrix());
 		m_shader->setMat4("view", m_cameraRef.GetViewMatrix());
+		m_shader->setVec3("viewPos", m_cameraRef.position);
+
 		m_shader->setMat4("model", ins.trans);
 		m_model->Draw(m_shader, m_cameraRef);
 	}

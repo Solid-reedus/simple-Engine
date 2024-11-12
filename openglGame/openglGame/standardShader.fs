@@ -1,11 +1,169 @@
 #version 330 core
 out vec4 FragColor;
 
+struct Material 
+{
+    sampler2D diffuse;
+    sampler2D specular;
+    float shininess;
+};
+
+// Add padding to align with std140 layout
+struct Sun 
+{
+    vec3 dir;
+    vec4 colorAndIntensity;
+};
+
+struct SpotLight 
+{
+    vec3 pos;
+    vec3 dir;
+    vec4 colorAndIntensity;
+};
+
+struct AreaLight 
+{
+    vec3 pos;
+    vec4 colorAndIntensity;
+};
+
+// Define UBO arrays for lights
+#define MAX_SUNS 3
+#define MAX_SPOTLIGHTS 15
+#define MAX_AREALIGHTS 15
+
+layout(std140) uniform Lighting 
+{
+    Sun suns[MAX_SUNS];
+    SpotLight spotlights[MAX_SPOTLIGHTS];
+    AreaLight areaLights[MAX_AREALIGHTS];
+
+    vec3 numOfLights; // x = numSuns, y = numAreaLights, z = numSpotlights
+};
+
+// Fragment shader inputs
+in vec3 FragPos;
+in vec3 Normal;
 in vec2 TexCoords;
 
-uniform sampler2D texture_diffuse1;
+// Other uniforms
+uniform vec3 viewPos;
+uniform Material material;
+
+vec3 CalcSunLight(Sun light, vec3 normal, vec3 viewDir, vec3 diffuseColor, vec3 specularColor);
+vec3 CalcAreaLight(AreaLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseColor, vec3 specularColor); 
+vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseColor, vec3 specularColor); 
 
 void main()
-{    
-    FragColor = texture(texture_diffuse1, TexCoords);
+{
+    vec3 norm = normalize(Normal);
+    vec3 viewDir = normalize(viewPos - FragPos);
+
+    // Precompute diffuse and specular textures
+    vec3 diffuseColor = vec3(texture(material.diffuse, TexCoords));
+    vec3 specularColor = vec3(texture(material.specular, TexCoords));
+
+    vec3 result = vec3(0.0);
+
+    // Apply Sun lights
+    for (int i = 0; i < numOfLights.x; i++) 
+    {
+        result += CalcSunLight(suns[i], norm, viewDir, diffuseColor, specularColor);
+    }
+
+    // Apply Area lights (similar to point lights)
+    for (int i = 0; i < numOfLights.y; i++) 
+    {
+        result += CalcAreaLight(areaLights[i], norm, FragPos, viewDir, diffuseColor, specularColor);
+    }
+
+    // Apply Spotlights
+    for (int i = 0; i < numOfLights.z; i++) 
+    {
+        result += CalcSpotLight(spotlights[i], norm, FragPos, viewDir, diffuseColor, specularColor);
+    }
+
+    FragColor = vec4(result, 1.0);
+}
+
+
+
+
+
+
+
+// Helper function to calculate attenuation based on distance
+float CalculateAttenuation(float distance, float constant, float linear, float quadratic) {
+    return 1.0 / (constant + linear * distance + quadratic * distance * distance);
+}
+
+// Helper function for specular reflection calculation
+float CalculateSpecular(vec3 lightDir, vec3 normal, vec3 viewDir, float shininess) {
+    vec3 reflectDir = reflect(-lightDir, normal);
+    return pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+}
+
+// Improved Sun Light Calculation
+vec3 CalcSunLight(Sun light, vec3 normal, vec3 viewDir, vec3 diffuseColor, vec3 specularColor) 
+{
+    vec3 color = light.colorAndIntensity.xyz;  // Extract color
+    float intensity = light.colorAndIntensity.w; // Intensity as the w component
+    
+    vec3 lightDir = normalize(-light.dir);
+    float diff = max(dot(normal, lightDir), 0.0);
+    float spec = CalculateSpecular(lightDir, normal, viewDir, material.shininess);
+
+    vec3 ambient = color * diffuseColor * 0.2;
+    vec3 diffuse = color * diff * diffuseColor;
+    vec3 specular = color * spec * specularColor;
+    
+    return intensity * (ambient + diffuse + specular);
+}
+
+// Improved Area Light Calculation
+vec3 CalcAreaLight(AreaLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseColor, vec3 specularColor) 
+{
+    vec3 color = light.colorAndIntensity.xyz; // Extract color
+    float intensity = light.colorAndIntensity.w; // Intensity as the w component
+
+    vec3 lightDir = normalize(light.pos - fragPos);
+    float diff = max(dot(normal, lightDir), 0.0);
+    float spec = CalculateSpecular(lightDir, normal, viewDir, material.shininess);
+
+    float distance = length(light.pos - fragPos);
+    float attenuation = CalculateAttenuation(distance, 1.0, 0.14, 0.07); // Customize attenuation factors
+
+    vec3 ambient = color * diffuseColor * 0.1;
+    vec3 diffuse = color * diff * diffuseColor;
+    vec3 specular = color * spec * specularColor;
+
+    return intensity * attenuation * (ambient + diffuse + specular);
+}
+
+// Improved Spot Light Calculation
+vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseColor, vec3 specularColor) 
+{
+    vec3 color = light.colorAndIntensity.xyz; // Extract color
+    float intensity = light.colorAndIntensity.w; // Intensity as the w component
+
+    vec3 lightDir = normalize(light.pos - fragPos);
+    float diff = max(dot(normal, lightDir), 0.0);
+    float spec = CalculateSpecular(lightDir, normal, viewDir, material.shininess);
+
+    float distance = length(light.pos - fragPos);
+    float attenuation = CalculateAttenuation(distance, 1.0, 0.14, 0.07); // Customize attenuation factors
+
+    // Spot light intensity based on angle
+    float theta = dot(lightDir, normalize(-light.dir));
+    float innerCutoff = 0.9; // Adjust as needed
+    float outerCutoff = 0.8; // Adjust as needed
+    float epsilon = innerCutoff - outerCutoff;
+    float spotIntensity = clamp((theta - outerCutoff) / epsilon, 0.0, 1.0);
+
+    vec3 ambient = color * diffuseColor * 0.1;
+    vec3 diffuse = color * diff * diffuseColor;
+    vec3 specular = color * spec * specularColor;
+
+    return intensity * attenuation * spotIntensity * (ambient + diffuse + specular);
 }
