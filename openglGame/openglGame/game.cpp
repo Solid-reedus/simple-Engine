@@ -106,35 +106,42 @@ bool Game::InitActors()
     m_shaders.push_back(Shader("standardShader.vs", "standardShader.fs"));
 
     std::vector<LightingManager::Sun> suns;
-    suns.push_back(
+    std::vector<LightingManager::SpotLight> spotLights;
+    std::vector<LightingManager::AreaLight> areaLights;
+
+    /* uncomment all of these snippets for a demonstration
+    
+    areaLights.push_back(
     {
-        glm::vec3(0.0f, -1.0f, 0.0f),
-        glm::vec3(1.0f),
-        1.0f                                            
+        glm::vec3(1.0f, 1.0f, 1.0f),
+        glm::vec3(1.0f, 1.0f, 0.0f),
+        1.0f
+    });
+    areaLights.push_back(
+    {
+        glm::vec3(-9.0f, 1.0f, -4.0f),
+        glm::vec3(1.0f, 1.0f, 0.0f),
+        1.0f
+    });
+    areaLights.push_back(
+    {
+        glm::vec3(-4.0f, 1.0f, -12.0f),
+        glm::vec3(1.0f, 0.0f, 0.0f),
+        1.0f
+    });
+    areaLights.push_back(
+    {
+        glm::vec3(-7.0f, 1.0f, -7.0f),
+        glm::vec3(0.0f, 1.0f, 1.0f),
+        1.0f
     });
 
+    */
 
-    std::vector<LightingManager::SpotLight> spotLights;
-    //spotLights.push_back(
-    //{
-    //    glm::vec3(1.0f, 1.0f, 1.0f),
-    //    glm::vec3(1.0f, 1.0f, 1.0f),
-    //    glm::vec3(1.0f, 1.0f, 1.0f),
-    //    1.0f
-    //});
-
-
-    std::vector<LightingManager::AreaLight> areaLights;
-    //areaLights.push_back(
-    //{
-    //    glm::vec3(1.0f, 1.0f, 1.0f),
-    //    glm::vec3(1.0f, 1.0f, 0.0f),
-    //    1.0f
-    //});
     lightingManager = new LightingManager(suns, spotLights, areaLights);
-
-
     
+    /* uncomment all of these snippets for a demonstration
+    * 
     Monkey* monkey = new Monkey(*m_currentCamera, &m_shaders[0]);
 
     Instance InstanceArray[10 * 10];
@@ -155,15 +162,33 @@ bool Game::InitActors()
     }
 
     m_renderedRenderable.push_back(monkey);
+    */
 
     return true;
 }
+
 
 void Game::Update()
 {
     float currentFrame = static_cast<float>(glfwGetTime());
     m_deltaTime = currentFrame - m_lastFrame;
     m_lastFrame = currentFrame;
+
+    /* uncomment all of these snippets for a demonstration
+   
+    float frequency = 2.0f; // You can adjust this to speed up or slow down the rainbow
+
+    // Calculate RGB channels with sine wave offsets
+    float r = 0.5f * (sin(frequency * glfwGetTime() + 0.0f) + 1.0f); // Cycle through red
+    float g = 0.5f * (sin(frequency * glfwGetTime() + 2.0f) + 1.0f); // Offset for green
+    float b = 0.5f * (sin(frequency * glfwGetTime() + 4.0f) + 1.0f); // Offset for blue
+
+    glm::vec3 color = glm::vec3(r, g, b);
+
+    lightingManager->UpdateLight(0, LightingManager::LightType::areaLight, LightingManager::LightAtr::pos, m_currentCamera->position);
+    lightingManager->UpdateLight(0, LightingManager::LightType::areaLight, LightingManager::LightAtr::color, color);
+    */
+
 
     // Smooth camera movement
     UpdateKeyInputs();
@@ -232,6 +257,7 @@ void Game::Render()
 
 void Game::Exit()
 {
+
 }
 
 void Game::OnKeyInput(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -241,6 +267,8 @@ void Game::OnKeyInput(GLFWwindow* window, int key, int scancode, int action, int
         glfwSetWindowShouldClose(window, true);
         return;
     }
+
+    
 
     Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
 }

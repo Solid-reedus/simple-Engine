@@ -59,7 +59,8 @@ struct Camera
     {
         return glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
     }
- 
+
+
     void UpdateCamVecs()
     {
         // calculate the new Front vector

@@ -31,7 +31,7 @@ class LightingManager
 	struct Sun
 	{
 		Sun(const glm::vec3& p_dir, const glm::vec3& p_color, const float& p_intensity)
-			: dir(glm::normalize(p_dir)), color(p_color), intensity(p_intensity)
+			: dir(p_dir), color(p_color), intensity(p_intensity)
 		{}
 
 		Sun()
@@ -49,7 +49,7 @@ class LightingManager
 	struct SpotLight
 	{
 		SpotLight(const glm::vec3& p_pos, const glm::vec3& p_dir, const glm::vec3& p_color, const float& p_intensity)
-			: pos(p_pos), dir(glm::normalize(p_dir)), color(p_color), intensity(p_intensity)
+			: pos(p_pos), dir(p_dir), color(p_color), intensity(p_intensity)
 		{}
 
 		SpotLight()
@@ -113,9 +113,13 @@ class LightingManager
 
 	private:
 
-	static constexpr int SPOT_LIGHT_BUFFER_START  = MAX_SUNS * 32;
-	static constexpr int AREA_LIGHT_BUFFER_START  = MAX_SUNS * 32 + MAX_SPOTLIGHTS * 48;
-	static constexpr int LIGHTS_SIZE_BUFFER_START = MAX_SUNS * 32 + MAX_SPOTLIGHTS * 48 + MAX_AREALIGHTS * 32;
+	static constexpr int SUN_BUFFER_SIZE = 32;
+	static constexpr int SPOT_LIGHT_BUFFER_SIZE = 48;
+	static constexpr int AREA_LIGHT_BUFFER_SIZE = 32;
+
+	static constexpr int SPOT_LIGHT_BUFFER_START  = MAX_SUNS * SUN_BUFFER_SIZE;
+	static constexpr int AREA_LIGHT_BUFFER_START  = MAX_SUNS * SUN_BUFFER_SIZE + MAX_SPOTLIGHTS * SPOT_LIGHT_BUFFER_SIZE;
+	static constexpr int LIGHTS_SIZE_BUFFER_START = MAX_SUNS * SUN_BUFFER_SIZE + MAX_SPOTLIGHTS * SPOT_LIGHT_BUFFER_SIZE + MAX_AREALIGHTS * AREA_LIGHT_BUFFER_SIZE;
 
 	void SetSubBufferVal(int p_offset, const glm::vec3& p_val);
 	void InitUBO();

@@ -32,6 +32,8 @@ class Game
 	Camera* m_currentCamera = nullptr;
 	LightingManager* lightingManager = nullptr;
 
+
+
 	private:
 
 	// OnKeyInput should be used for non continuous input
@@ -48,6 +50,7 @@ class Game
 	std::vector<BaseActor*> m_renderedActors;
 	std::vector<Camera> m_sceneCameras;
 	std::vector<Shader> m_shaders;
+
 
 };
 

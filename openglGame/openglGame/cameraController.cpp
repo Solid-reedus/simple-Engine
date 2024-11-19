@@ -18,6 +18,8 @@ void CameraController::ProcessKeyboard(Camera_Movement p_direction, float p_delt
         default:
         break;
     }
+
+
 }
 
 void CameraController::ProcessMouseMovement(glm::vec2 p_newPos, GLboolean p_constrainPitch)

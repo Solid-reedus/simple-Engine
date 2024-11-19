@@ -186,13 +186,12 @@ void LightingManager::UpdateLight(int p_index, LightType p_lightType, LightAtr p
 				}
 				case LightingManager::LightAtr::dir:
 				{
-					offset += p_index * sizeof(SpotLight) + 16;
-					SetSubBufferVal(offset, p_val);
+					printf("error: arealight doesnt have a attribute dir, in LightingManager::UpdateLight \n");
 					return;
 				}
 				case LightingManager::LightAtr::color:
 				{
-					offset += p_index * sizeof(SpotLight) + (16 * 2);
+					offset += p_index * sizeof(SpotLight) + 16;
 					SetSubBufferVal(offset, p_val);
 					return;
 				}
