@@ -33,12 +33,12 @@
 
 
 # Ignore Visual Studio files
-openglGame/.vs/
+openglGame/openglGame/.vs/
 
 # Ignore build output directories
-openglGame/x64/
-openglGame/Debug/
-openglGame/Release/
+openglGame/openglGame/x64/
+openglGame/openglGame/Debug/
+openglGame/openglGame/Release/
 
 openglGame/openglGame/libraries/include/
 openglGame/openglGame/libraries/lib/
