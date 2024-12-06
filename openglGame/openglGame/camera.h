@@ -4,15 +4,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-
-
-
-
-
-
 struct Camera
 {
 
@@ -59,7 +50,6 @@ struct Camera
     {
         return glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
     }
-
 
     void UpdateCamVecs()
     {

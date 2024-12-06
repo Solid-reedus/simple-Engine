@@ -109,7 +109,6 @@ bool Game::InitActors()
     std::vector<LightingManager::SpotLight> spotLights;
     std::vector<LightingManager::AreaLight> areaLights;
 
-    /* uncomment all of these snippets for a demonstration
     
     areaLights.push_back(
     {
@@ -136,12 +135,9 @@ bool Game::InitActors()
         1.0f
     });
 
-    */
 
     lightingManager = new LightingManager(suns, spotLights, areaLights);
     
-    /* uncomment all of these snippets for a demonstration
-    * 
     Monkey* monkey = new Monkey(*m_currentCamera, &m_shaders[0]);
 
     Instance InstanceArray[10 * 10];
@@ -162,7 +158,6 @@ bool Game::InitActors()
     }
 
     m_renderedRenderable.push_back(monkey);
-    */
 
     return true;
 }
@@ -174,7 +169,6 @@ void Game::Update()
     m_deltaTime = currentFrame - m_lastFrame;
     m_lastFrame = currentFrame;
 
-    /* uncomment all of these snippets for a demonstration
    
     float frequency = 2.0f; // You can adjust this to speed up or slow down the rainbow
 
@@ -187,7 +181,6 @@ void Game::Update()
 
     lightingManager->UpdateLight(0, LightingManager::LightType::areaLight, LightingManager::LightAtr::pos, m_currentCamera->position);
     lightingManager->UpdateLight(0, LightingManager::LightType::areaLight, LightingManager::LightAtr::color, color);
-    */
 
 
     // Smooth camera movement

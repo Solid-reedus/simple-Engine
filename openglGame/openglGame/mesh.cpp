@@ -1,5 +1,5 @@
 #include "mesh.h"
-#include <glad/glad.h> // holds all OpenGL type declarations
+//#include <glad/glad.h> // holds all OpenGL type declarations
 #include <string>
 #include <shader.h>
 
