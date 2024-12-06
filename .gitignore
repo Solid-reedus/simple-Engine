@@ -40,5 +40,5 @@ openglGame/x64/
 openglGame/Debug/
 openglGame/Release/
 
-openglGame/libraries/include/
-openglGame/libraries/lib/
+openglGame/openglGame/libraries/include/
+openglGame/openglGame/libraries/lib/
